@@ -1,9 +1,10 @@
-const modulesUrl = "https://eddb.io/archive/v6/modules.json";
-const downloadFile = require("./downloadFile");
-const refresh = require('./refresh_eddb_files')
+require("dotenv").config();
+const express = require("express");
+const app = express();
+const { PORT } = process.env;
 
-const main = () => {
-  refresh()
-};
+app.get("/", (req, res) => {
+  res.send("You've made it. - Brady S");
+});
 
-main();
+app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
