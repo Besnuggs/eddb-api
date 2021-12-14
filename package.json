@@ -1,0 +1,18 @@
+{
+  "name": "discord-eddbio-bot",
+  "version": "1.0.0",
+  "description": "A basic discord bot for retrieving and formatting data from eddb.io",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brady Snuggs",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "axios": "^0.24.0"
+  }
+}
