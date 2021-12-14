@@ -4,4 +4,4 @@ This is an open API for Elite Dangerous Database information which will be used 
 
 ## Resources:
 
-All information pertaining to eddb.io's existing API can be found <a href="https://eddb.io/api">here</a>.
+All information pertaining to eddb.io's existing API can be found <a target="_blank" href="https://eddb.io/api">here</a>.
