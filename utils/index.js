@@ -25,7 +25,7 @@ const downloadFile = async ({ fileUrl, folder, outputPath }) => {
   });
 };
 
-const getAllEddbFiles = () => {
+const getAllEddbFiles = async () => {
   const fileNames = [
     "systems.csv",
     "systems_recently.csv",
@@ -48,7 +48,7 @@ const getAllEddbFiles = () => {
 
   for (const fileName of fileNames) {
     await downloadFile({
-      fileUrl: `${baseUrl}${fileName}`,
+      fileUrl: `${baseUrl}/${fileName}`,
       folder: "./eddb_files",
       outputPath: fileName,
     });
