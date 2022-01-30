@@ -1,43 +1,50 @@
 const rawMaterials = [
-  "Carbon",
-  "Iron",
-  "Lead",
-  "Nickel",
-  "Phosphorus",
-  "Rhenium",
-  "Sulphur",
-  "Arsenic",
-  "Chromium",
-  "Germanium",
-  "Manganese",
-  "Vanadium",
-  "Zinc",
-  "Zirconium",
-  "Boron",
-  "Cadmium",
-  "Mercury",
-  "Molybdenum",
-  "Niobium",
-  "Tin",
-  "Tungsten",
-  "Antimony",
-  "Polonium",
-  "Ruthenium",
-  "Selenium",
-  "Technetium",
-  "Tellurium",
-  "Yttrium",
+  'Carbon',
+  'Iron',
+  'Lead',
+  'Nickel',
+  'Phosphorus',
+  'Rhenium',
+  'Sulphur',
+  'Arsenic',
+  'Chromium',
+  'Germanium',
+  'Manganese',
+  'Vanadium',
+  'Zinc',
+  'Zirconium',
+  'Boron',
+  'Cadmium',
+  'Mercury',
+  'Molybdenum',
+  'Niobium',
+  'Tin',
+  'Tungsten',
+  'Antimony',
+  'Polonium',
+  'Ruthenium',
+  'Selenium',
+  'Technetium',
+  'Tellurium',
+  'Yttrium'
 ];
 
-// if chars surrounds '+', it is a space as part of a parameter
-const spaceInNameRegex = /([a-zA-Z0-9])(\+)([a-zA-Z0-9])/g;
+const parseParams = (params) => {
+  const primaryParamArr = params.match(/"([^"]+)"/g) || [];
 
-const addSpaceInName = (stationName) => {
-  return stationName.replace(spaceInNameRegex, "$1 $3");
+  if (primaryParamArr.length === 0) {
+    throw Error(
+      'No primary arguments were provided for this command. Be sure to encase all primary arguments with double quotation marks (e.g. !ed edsm get-system "Merope" OR !ed edsm get-systems "Merope" "Ngalinn" and etc.).'
+    );
+  }
+
+  const primaryParams = primaryParamArr.map((param) => param.replace(/^"([^"]*)"$/, '$1'));
+  const secondaryParams = params.replace(/(-.+)$/, '$1');
+
+  return { primaryParams, secondaryParams };
 };
 
 module.exports = {
   rawMaterials,
-  addSpaceInName,
-  spaceInNameRegex,
+  parseParams
 };

@@ -1,57 +1,70 @@
-require("dotenv").config();
-const commands = require("./commands");
+require('dotenv').config();
+const commands = require('./commands');
 const { PORT, DISCORD_CLIENT_TOKEN } = process.env;
-const { Client, Intents } = require("discord.js");
+const { Client, Intents } = require('discord.js');
 const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
 });
+const { tableBuilder } = require('./utils/messageBuilder');
 
-client.on("ready", () => {
+client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on("error", (error) => {
+client.on('error', (error) => {
   console.error(error);
 });
 
 const reduceResponse = (response) => {
-  if (response.length > 4000) {
+  if (response.length > 2000) {
     return response.slice(0, 2000);
   } else {
     return response;
   }
 };
 
-client.on("messageCreate", async (message) => {
-  if (
-    message.author.username === "eddb-bot" ||
-    !/^\!ed/.test(message.content)
-  ) {
+client.on('interactionCreate', async (interaction) => {
+  console.log(interaction);
+  if (!interaction.isCommand()) return;
+  const { commandName } = interaction;
+  console.log(commandName, 'command hit!', interaction);
+});
+
+client.on('messageCreate', async (message) => {
+  if (message.author.username === 'eddb-bot' || !/^\!ed/.test(message.content)) {
     return;
   }
-  const parentCommand = message.content.slice(4);
+
+  // .slice(4) is slicing out "!ed "
+  const [parentCommand, subCommand, ...params] = message.content.slice(4).split(' ');
 
   switch (true) {
-    // case /^testMessage/.test(parentCommand):
-    //   console.log(exampleEmbed);
-    //   message.channel.send({ embeds: [exampleEmbed] });
-    //   break;
+    case /^commodity/.test(parentCommand):
+      const commander = message.author.username;
+      const command = message.content;
+      const exampleEmbed = tableBuilder({ command, commander });
+      message.channel.send(exampleEmbed);
+      break;
     case /^ping/.test(parentCommand):
       message.channel.send(
-        `🏓 Latency is ${
-          Date.now() - message.createdTimestamp
-        }ms. API Latency is ${Math.round(client.ws.ping)}ms`
+        `🏓 Latency is ${Date.now() - message.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`
       );
       break;
+    case /^nearest\-\w+\-to\-buy/.test(parentCommand):
+      const commodity = parentCommand.replace(/nearest\-(\w+)\-to\-buy/, '$1');
+      message.channel.send(
+        `PLease wait while I fetch "${commodity}" at lowest price from local systems based your latest coordinates, CMDR ${message.author.username}...`
+      );
+      console.log(parentCommand);
+      break;
     case /^help/.test(parentCommand):
-      message.channel.send("Work in progress.");
+      message.channel.send('Work in progress.');
       break;
     case /^edsm/.test(parentCommand):
       const { edsm } = commands;
-      const [command, ...params] = parentCommand.slice(5).split(" ");
-      if (command in edsm) {
+      if (subCommand in edsm) {
         try {
-          const response = await edsm[command].function(params);
+          const response = await edsm[subCommand].function(params.join(' '));
           message.channel.send(reduceResponse(JSON.stringify(response)));
         } catch (e) {
           console.error(e);
@@ -59,16 +72,12 @@ client.on("messageCreate", async (message) => {
           message.channel.send(`There was an error: ${errorMessage}`);
         }
       } else {
-        message.channel.send(
-          `EDSM case hit; however, "${command}" does not exist.`
-        );
+        message.channel.send(`EDSM case hit; however, "${subCommand}" does not exist.`);
       }
       break;
     case /^carrier-departure/.test(parentCommand):
       try {
-        message.channel.send(
-          "🚀 Countdown for carrier departure: 15 minutes 🕙"
-        );
+        message.channel.send('🚀 Countdown for carrier departure: 15 minutes 🕙');
       } catch (e) {
         const errorMessage = e.toString();
         message.channel.send(`There was an error: ${errorMessage}`);

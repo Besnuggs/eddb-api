@@ -1,213 +1,249 @@
-const controller = require("../controllers/edsm.js");
+const controller = require('../controllers/edsm.js');
 const { EDSM_BRADY_API_KEY } = process.env;
-const { addSpaceInStationName, spaceInNameRegex } = require("../utils/ed");
+const { parseParams } = require('../utils/ed');
 
 module.exports = {
-  "server-status": {
-    functionName: "getServerStatus",
+  'server-status': {
+    functionName: 'getServerStatus',
     function: controller.getServerStatus,
-    description: "Fetches the status of the Elite Dangerous API server.",
+    description: 'Fetches the status of the Elite Dangerous API server.',
     parameters: [
       {
-        name: "lastUpdate",
-        description:
-          "Datetime when we last checked the status of the Elite Dangerous server.",
-        type: "Datetime",
-      },
+        name: 'lastUpdate',
+        description: 'Datetime when we last checked the status of the Elite Dangerous server.',
+        type: 'Datetime'
+      }
     ],
-    filters: [],
+    filters: []
   },
-  "get-system": {
+  'get-system': {
     function: (params) => {
-      const [systemName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName] = primaryParams;
       return controller.getSystem({ systemName });
     },
-    description: "Fetches general information of a system.",
+    description: 'Fetches general information of a system.',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "get-systems": {
+  'get-systems': {
     function: (params) => {
-      return controller.getSystems({ systemNames: params });
+      let { primaryParams, secondaryParams } = parseParams(params);
+      return controller.getSystems({ systemNames: primaryParams });
     },
-    description: "Some description",
+    description: 'Some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "get-system-bodies": {
+  'get-system-bodies': {
     function: (params) => {
-      const [systemName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName] = primaryParams;
       return controller.getSystemBodies({ systemName });
     },
-    description: "Some description",
+    description: 'Some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "scan-system-values": {
+  'scan-system-values': {
     function: (params) => {
-      const [systemName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName] = primaryParams;
       return controller.getScanValuesOfSystem({ systemName });
     },
-    description: "Some description",
+    description: 'Some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "stations-in-system": {
+  'stations-in-system': {
     function: (params) => {
-      const [systemName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName] = primaryParams;
       return controller.getStationsInSystem({ systemName });
     },
-    description: "Some description",
+    description: 'Some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "market-in-station": {
+  'market-in-station': {
     function: async (params) => {
-      let [systemName, stationName] = params;
-      if (spaceInNameRegex.test(stationName)) {
-        stationName = addSpaceInStationName(stationName);
-      }
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName, stationName] = primaryParams;
       const systemData = await controller.getStationsInSystem({ systemName });
-      const station = systemData.stations.filter(
-        (station) => station.name === stationName
-      )[0];
+      const station = systemData.stations.filter((station) => station.name === stationName)[0];
       if (!station) {
         throw new Error(`"${stationName}" not found in ${systemName}.`);
       }
       return controller.getMarketInStation({
-        marketId: station.marketId,
+        marketId: station.marketId
       });
     },
-    description: "some description",
+    description: 'some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "shipyard-in-station": {
+  'shipyard-in-station': {
     function: async (params) => {
-      let [systemName, stationName] = params;
-      if (spaceInNameRegex.test(stationName)) {
-        stationName = stationName.replace(spaceInNameRegex, " ");
-      }
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName, stationName] = primaryParams;
       const systemData = await controller.getStationsInSystem({ systemName });
-      const station = systemData.stations.filter(
-        (station) => station.name === stationName
-      )[0];
+      const station = systemData.stations.filter((station) => station.name === stationName)[0];
       if (!station) {
         throw new Error(`"${stationName}" not found in ${systemName}.`);
       }
       return controller.getShipyardInStation({ marketId: station.marketId });
     },
-    description: "some description",
+    description: 'some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "outfitting-in-station": {
+  'outfitting-in-station': {
     function: async (params) => {
-      let [systemName, stationName] = params;
-      if (spaceInNameRegex.test(stationName)) {
-        stationName = stationName.replace(spaceInNameRegex, " ");
-      }
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName, stationName] = primaryParams;
       const systemData = await controller.getStationsInSystem({ systemName });
-      const station = systemData.stations.filter(
-        (station) => station.name === stationName
-      )[0];
+      const station = systemData.stations.filter((station) => station.name === stationName)[0];
       if (!station) {
         throw new Error(`"${stationName}" not found in ${systemName}.`);
       }
       return controller.getOutfittingInStation({ marketId: station.marketId });
     },
-    description: "some description",
+    description: 'some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "factions-in-system": {
+  'factions-in-system': {
     function: (params) => {
-      const [systemName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName] = primaryParams;
       return controller.getFactionsInSystem({ systemName });
     },
-    description: "some description",
+    description: 'some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "traffic-in-system": {
+  'traffic-in-system': {
     function: (params) => {
-      const [systemName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName] = primaryParams;
       return controller.getTrafficInSystem({ systemName });
     },
-    description: "some description",
+    description: 'some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "deaths-in-system": {
+  'deaths-in-system': {
     function: (params) => {
-      const [systemName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName] = primaryParams;
       return controller.getDeathsInSystem({ systemName });
     },
-    description: "some description",
+    description: 'some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "systems-in-sphere": {
+  'systems-in-sphere': {
     function: (params) => {
-      const [systemName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName] = primaryParams;
       return controller.getSystemsInSphere({ systemName });
     },
-    description: "some description",
+    description: 'some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "systems-in-cube": {
+  'systems-in-cube': {
     function: (params) => {
-      const [systemName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [systemName] = primaryParams;
       return controller.getSystemsInCube({ systemName });
     },
-    description: "some description",
+    description: 'some description',
     parameters: [],
-    filters: [],
+    filters: []
   },
-  "commander-rank": {
+  'commander-rank': {
     function: (params) => {
-      const [commanderName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [commanderName] = primaryParams;
       return controller.getCommanderRank({
         commanderName,
-        apiKey: EDSM_BRADY_API_KEY,
+        apiKey: EDSM_BRADY_API_KEY
       });
-    },
+    }
   },
-  "commander-cargo": {
+  'commander-cargo': {
     function: (params) => {
-      const [commanderName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [commanderName] = primaryParams;
       return controller.getCommanderCargo({
         commanderName,
-        apiKey: EDSM_BRADY_API_KEY,
+        apiKey: EDSM_BRADY_API_KEY
       });
-    },
+    }
   },
-  "commander-credits": {
+  'commander-credits': {
     function: (params) => {
-      const [commanderName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [commanderName] = primaryParams;
       return controller.getCommanderCredits({
         commanderName,
-        apiKey: EDSM_BRADY_API_KEY,
+        apiKey: EDSM_BRADY_API_KEY
       });
-    },
+    }
   },
-  "commander-position": {
+  'commander-position': {
     function: (params) => {
-      const [commanderName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [commanderName] = primaryParams;
       return controller.getCommanderPosition({
         commanderName,
-        apiKey: EDSM_BRADY_API_KEY,
+        apiKey: EDSM_BRADY_API_KEY
       });
-    },
+    }
   },
-  "commander-logs": {
+  'commander-logs': {
     function: (params) => {
-      const [commanderName] = params;
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [commanderName] = primaryParams;
       return controller.getLogs({
         commanderName,
-        apiKey: EDSM_BRADY_API_KEY,
+        apiKey: EDSM_BRADY_API_KEY
       });
-    },
+    }
   },
+  'commander-comment': {
+    function: (params) => {
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [commanderName, systemName] = primaryParams;
+      return controller.getComment({
+        systemName,
+        commanderName,
+        apiKey: EDSM_BRADY_API_KEY
+      });
+    }
+  },
+  'commander-comments': {
+    function: (params) => {
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [commanderName, systemName] = primaryParams;
+      return controller.getComments({
+        systemName,
+        commanderName,
+        apiKey: EDSM_BRADY_API_KEY
+      });
+    }
+  },
+  'commander-set-comment-in-system': {
+    function: (params) => {
+      const { primaryParams, secondaryParams } = parseParams(params);
+      const [commanderName, systemName, comment] = primaryParams;
+      return controller.setComment({
+        systemName,
+        commanderName,
+        comment,
+        apiKey
+      });
+    }
+  }
 };

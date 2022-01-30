@@ -1,5 +1,5 @@
-const edsm = require("./edsm");
+const edsm = require('./edsm');
 
 module.exports = {
-  edsm,
+  edsm
 };
